@@ -37,7 +37,7 @@ The important features of Zig, especially for JNI development, are:
     .name = "...",
     .version = "...",
     .dependencies = .{
-        .JNI = .{
+        .jni = .{
             .url = "https://github.com/SuperIceCN/Zig-JNI/archive/refs/tags/{VERSION}.tar.gz",
         }
     },
@@ -55,7 +55,7 @@ note: expected .hash = "1220a61eebdcda95a9e51e2a4f237522d407a0404aea4225fc27b2bb
 ```zig
 pub fn build(b: *std.Build) void {
     // depdencies
-    const dep_JNI = b.dependency("JNI", .{}).module("JNI");
+    const dep_JNI = b.dependency("jni", .{}).module("JNI");
     // ...
     artifact.root_module.addImport("jni", dep_JNI); 
     // here artifact is the return value of b.addExecutable / b.addSharedLibrary / b.addStaticLibrary
