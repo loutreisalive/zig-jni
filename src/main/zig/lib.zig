@@ -223,7 +223,7 @@ pub fn getCreatedJavaVM() !JavaVM {
 
     if (count == 0) return error.NoJavaVM;
 
-    return JavaVM.wrap(raw);
+    return JavaVM.warp(raw);
 }
 
 /// JavaVM wrapper.
@@ -232,7 +232,7 @@ pub const JavaVM = struct {
     _cJavaVM: ?*cjni.JavaVM = null,
 
     /// Converts a raw cjni JavaVM to a JavaVM.
-    pub inline fn wrap(cJavaVM: ?*cjni.JavaVM) JavaVM {
+    pub inline fn warp(cJavaVM: ?*cjni.JavaVM) JavaVM {
         return JavaVM{ ._cJavaVM = cJavaVM };
     }
 
