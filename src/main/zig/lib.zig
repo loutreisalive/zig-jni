@@ -459,8 +459,10 @@ pub const JNIEnv = struct {
     /// Constructs a new Java object. The method ID indicates which constructor method to invoke.
     ///
     /// See: https://docs.oracle.com/en/java/javase/22/docs/specs/jni/functions.html#newobject
-    pub inline fn newObject(self: *const JNIEnv, clazz: jclass, methodID: jmethodID, args: [*]const jvalue) jobject {
-        return self._cJNIEnv.*.*.NewObjectA.?(self._cJNIEnv, clazz, methodID, args);
+    pub inline fn newObject(self: *const JNIEnv, clazz: jclass, methodID: jmethodID, args: anytype) jobject {
+        const jargs = toJValues(args);
+        const ptr: [*]const jvalue = if (jargs.len == 0) undefined else @ptrCast(&jargs);
+        return self._cJNIEnv.*.*.NewObjectA.?(self._cJNIEnv, clazz, methodID, ptr);
     }
 
     /// Returns the class of an object.
