@@ -232,7 +232,7 @@ pub const JavaVM = struct {
     _cJavaVM: ?*cjni.JavaVM = null,
 
     /// Converts a raw cjni JavaVM to a JavaVM.
-    pub inline fn warp(cJavaVM: ?*cjni.JavaVM) JavaVM {
+    pub inline fn wrap(cJavaVM: ?*cjni.JavaVM) JavaVM {
         return JavaVM{ ._cJavaVM = cJavaVM };
     }
 
