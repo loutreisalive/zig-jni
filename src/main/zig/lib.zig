@@ -113,7 +113,6 @@ pub fn exportJNI(comptime class_name: []const u8, comptime func_struct: type) vo
             continue;
         }
 
-
         // If it is not a function with calling convention .C, skip.
         if (!@typeInfo(func_type).@"fn".calling_convention.eql(.c)) {
             continue;
@@ -148,7 +147,7 @@ inline fn valueLen(comptime ArgsType: type) comptime_int {
 
     return switch (args_type_info) {
         .@"struct" => |s| s.fields.len,
-        .@"void" => 0,
+        .void => 0,
         else => 1,
     };
 }
@@ -214,6 +213,17 @@ pub fn toJValues(args: anytype) [valueLen(@TypeOf(args))]jvalue {
     }
 
     return output;
+}
+
+pub fn getCreatedJavaVM() !JavaVM {
+    var raw: ?*cjni.JavaVM = null;
+    var count: jsize = 0;
+
+    try checkError(cjni.JNI_GetCreatedJavaVMs(&raw, 1, &count));
+
+    if (count == 0) return error.NoJavaVM;
+
+    return JavaVM.wrap(raw);
 }
 
 /// JavaVM wrapper.
