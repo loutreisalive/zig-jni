@@ -485,8 +485,9 @@ pub const JNIEnv = struct {
     }
 
     /// Calls a class method (nonstatic) on an object instance.
-    pub inline fn callMethod(self: *const JNIEnv, obj: jobject, comptime ReturnType: type, methodID: jmethodID, arg: []const jvalue) ReturnType {
-        const args: [*]const jvalue = if (arg.len == 0) undefined else arg.ptr;
+    pub inline fn callMethod(self: *const JNIEnv, obj: jobject, comptime ReturnType: type, methodID: jmethodID, arg: anytype) ReturnType {
+        const jargs = toJValues(arg);
+        const args: [*]const jvalue = if (jargs.len == 0) undefined else @ptrCast(&jargs);
         return switch (ReturnType) {
             jobject => self._cJNIEnv.*.*.CallObjectMethodA.?(self._cJNIEnv, obj, methodID, args),
             jboolean => self._cJNIEnv.*.*.CallBooleanMethodA.?(self._cJNIEnv, obj, methodID, args),
@@ -514,7 +515,10 @@ pub const JNIEnv = struct {
     /// Calls a class method (nonstatic) on an object instance without adhering to polymorphism.
     ///
     /// See: https://docs.oracle.com/en/java/javase/22/docs/specs/jni/functions.html#callnonvirtualtypemethod-routines-callnonvirtualtypemethoda-routines-callnonvirtualtypemethodv-routines
-    pub inline fn callNonvirtualMethod(self: *const JNIEnv, obj: jobject, clazz: jclass, comptime ReturnType: type, methodID: jmethodID, args: [*]const jvalue) ReturnType {
+    pub inline fn callNonvirtualMethod(self: *const JNIEnv, obj: jobject, clazz: jclass, comptime ReturnType: type, methodID: jmethodID, arg: anytype) ReturnType {
+        const jargs = toJValues(arg);
+        const args: [*]const jvalue = if (jargs.len == 0) undefined else @ptrCast(&jargs);
+
         return switch (ReturnType) {
             jobject => self._cJNIEnv.*.*.CallNonvirtualObjectMethodA.?(self._cJNIEnv, obj, clazz, methodID, args),
             jboolean => self._cJNIEnv.*.*.CallNonvirtualBooleanMethodA.?(self._cJNIEnv, obj, clazz, methodID, args),
@@ -596,8 +600,9 @@ pub const JNIEnv = struct {
     }
 
     /// Calls a static method of a class.
-    pub inline fn callStaticMethod(self: *const JNIEnv, clazz: jclass, comptime ReturnType: type, methodID: jmethodID, arg: []const jvalue) ReturnType {
-        const args: [*]const jvalue = if (arg.len == 0) undefined else arg.ptr;
+    pub inline fn callStaticMethod(self: *const JNIEnv, clazz: jclass, comptime ReturnType: type, methodID: jmethodID, arg: anytype) ReturnType {
+        const jargs = toJValues(arg);
+        const args: [*]const jvalue = if (jargs.len == 0) undefined else @ptrCast(&jargs);
         return switch (ReturnType) {
             jobject => self._cJNIEnv.*.*.CallStaticObjectMethodA.?(self._cJNIEnv, clazz, methodID, args),
             jboolean => self._cJNIEnv.*.*.CallStaticBooleanMethodA.?(self._cJNIEnv, clazz, methodID, args),
