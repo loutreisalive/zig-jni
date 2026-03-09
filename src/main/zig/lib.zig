@@ -245,6 +245,12 @@ pub const JavaVM = struct {
         return try checkError(self._cJavaVM.?.*.*.AttachCurrentThread.?(self._cJavaVM, @ptrCast(penv), args));
     }
 
+    pub fn attachCurrentThreadEnv(self: *JavaVM, penv: *JNIEnv, args: ?*anyopaque) !void {
+        var cenv: ?*cEnv = null;
+        try checkError(self._cJavaVM.?.*.*.AttachCurrentThread.?(self._cJavaVM, @ptrCast(&cenv), args));
+        penv.* = JNIEnv.warp(cenv.?);
+    }
+
     /// Detaches the current thread from a Java VM. All Java monitors held by this thread are released. All Java threads waiting for this thread to die are notified.
     pub fn detachCurrentThread(self: *JavaVM) !void {
         return try checkError(self._cJavaVM.?.*.*.DetachCurrentThread.?(self._cJavaVM));
